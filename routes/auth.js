@@ -9,7 +9,7 @@ const passport = require('passport')
 
 // shows our form
 router.get('/signup', function (req, res, next) {
-  res.render('auth/signup')
+  res.render('auth/signup', { message: req.flash('message') })
 });
 
 router.get('/login', function (req, res, next) {
@@ -22,8 +22,21 @@ router.post('/signup', (req, res, next) => {
   const salt = bcrypt.genSaltSync(bcryptSalt);
   const hashPass = bcrypt.hashSync(password, salt);
 
+  let username = req.body.username
+
+  // if (username.length < 4) {
+  //   // don't do this -> POST requests should always redirect
+  //   res.render('auth/signup', { message: "username too short" })
+  //   return
+  // }
+
+  if (username.length < 4) {
+    req.flash('message', 'username is too short (flash)')
+    res.redirect('/auth/signup')
+  }
+
   User.create({
-    username: req.body.username,
+    username: username,
     password: hashPass
   }).then((user) => {
     req.login(user, function (err) {

@@ -12,6 +12,7 @@ const bcrypt = require("bcrypt");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const MongoStore = require("connect-mongo")(session);
+const flash = require("connect-flash");
 
 const User = require('./models/userfile')
 
@@ -29,6 +30,9 @@ app.use(session({
     ttl: 24 * 60 * 60 // 1 day
   })
 }));
+
+// this adds req.flash to every route
+app.use(flash());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -97,6 +101,7 @@ passport.use(
 
 // END: passport config
 
+// this among other things adds req.user to every route
 app.use(passport.initialize());
 app.use(passport.session());
 
